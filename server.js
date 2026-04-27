@@ -1,18 +1,18 @@
 const express = require("express");
 const path = require("path");
 
-const app = express(); // ✅ MUST be before using app
+const app = express();
 
 // Routes
 const ocrRoutes = require("./routes/ocrRoutes");
 app.use("/api/ocr", ocrRoutes);
 
-// Serve static files (frontend)
+// Serve frontend
 app.use(express.static(path.join(__dirname, "public")));
 
 // Default route
 app.get("/", (req, res) => {
-    res.send("OCR Server Running...");
+    res.redirect("/login.html");
 });
 
 // Start server

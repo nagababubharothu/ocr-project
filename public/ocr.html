@@ -10,13 +10,15 @@
 <div class="container">
 <h2>📷 Image to Text (OCR)</h2>
 
-<input type="file" id="imageInput">
+<input type="file" id="imageInput" accept="image/png, image/jpeg">
 
 <br>
 
 <button onclick="extractText()" class="primary">
     Extract Text
 </button>
+
+<p id="status"></p>
 
 <pre id="output"></pre>
 
@@ -28,23 +30,36 @@
 <script>
 async function extractText() {
     const file = document.getElementById("imageInput").files[0];
+    const status = document.getElementById("status");
 
     if (!file) {
         alert("Please select an image");
         return;
     }
 
+    status.innerText = "Processing... ⏳";
+
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/ocr/extract", {
-        method: "POST",
-        body: formData
-    });
+    try {
+        const res = await fetch("/api/ocr/extract", {
+            method: "POST",
+            body: formData
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    document.getElementById("output").innerText = data.text;
+        if (data.error) {
+            status.innerText = "Error: " + data.error;
+        } else {
+            status.innerText = "Done ✅";
+            document.getElementById("output").innerText = data.text;
+        }
+
+    } catch (err) {
+        status.innerText = "Failed ❌";
+    }
 }
 </script>
 

@@ -4,19 +4,29 @@ const Tesseract = require("tesseract.js");
 
 const router = express.Router();
 
-// store uploaded files
-const upload = multer({ dest: "uploads/" });
+// Only allow images
+const upload = multer({
+    dest: "uploads/",
+    fileFilter: (req, file, cb) => {
+        if (
+            file.mimetype === "image/jpeg" ||
+            file.mimetype === "image/png"
+        ) {
+            cb(null, true);
+        } else {
+            cb(new Error("Only JPG/PNG images allowed"), false);
+        }
+    }
+});
 
+// OCR API
 router.post("/extract", upload.single("file"), async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded" });
+            return res.status(400).json({ error: "No image uploaded" });
         }
 
-        const result = await Tesseract.recognize(
-            req.file.path,
-            "eng"
-        );
+        const result = await Tesseract.recognize(req.file.path, "eng");
 
         res.json({
             text: result.data.text
@@ -24,7 +34,7 @@ router.post("/extract", upload.single("file"), async (req, res) => {
 
     } catch (err) {
         res.status(500).json({
-            error: "OCR failed"
+            error: err.message
         });
     }
 });

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Image to Text</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+<h2>📷 Image to Text (OCR)</h2>
+
+<input type="file" id="imageInput">
+
+<button onclick="extractText()" class="primary">
+    Extract Text
+</button>
+
+<pre id="output"></pre>
+
+<br>
+<a href="login.html">⬅ Back</a>
+
+</div>
+
+<script>
+async function extractText() {
+    const file = document.getElementById("imageInput").files[0];
+
+    if (!file) {
+        alert("Please select an image");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/api/ocr/extract", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    document.getElementById("output").innerText = data.text;
+}
+</script>
+
+</body>
+</html>

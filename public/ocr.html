@@ -2,17 +2,19 @@
 <html>
 <head>
 <title>Image to Text</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+<div class="container">
 <h2>📷 Image to Text (OCR)</h2>
 
 <input type="file" id="imageInput">
 
-<br><br>
+<br>
 
-<button onclick="extractText()">
+<button onclick="extractText()" class="primary">
     Extract Text
 </button>
 
@@ -20,6 +22,8 @@
 
 <br>
 <a href="/login.html">⬅ Back</a>
+
+</div>
 
 <script>
 async function extractText() {
@@ -33,19 +37,14 @@ async function extractText() {
     const formData = new FormData();
     formData.append("file", file);
 
-    try {
-        const res = await fetch("/api/ocr/extract", {
-            method: "POST",
-            body: formData
-        });
+    const res = await fetch("/api/ocr/extract", {
+        method: "POST",
+        body: formData
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        document.getElementById("output").innerText = data.text;
-
-    } catch (err) {
-        alert("Error extracting text");
-    }
+    document.getElementById("output").innerText = data.text;
 }
 </script>
 
